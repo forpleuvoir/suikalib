@@ -1,5 +1,8 @@
 plugins {
+    id 'maven-publish'
     id 'java'
+    id 'signing'
+    id 'java-library'
 }
 
 group = project.maven_group
@@ -8,15 +11,82 @@ version = project.lib_version
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
-
-
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+java {
+    withSourcesJar()
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'suikalib'
+            groupId = "${maven_group}"
+            version = "${lib_version}"
+            from components.java
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'suikalib'
+                description = 'suikalib'
+                url = 'https://github.com/forpleuvoir/suikalib'
+                properties = [
+                        myProp          : "value",
+                        "prop.with.dots": "anotherValue"
+                ]
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'suikalib'
+                        name = 'forpleuvoir'
+                        email = '695801070@qq.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/forpleuvoir/suikalib.git'
+                    developerConnection = 'scm:git:https://github.com/forpleuvoir/suikalib.git'
+                    url = 'https://github.com/forpleuvoir/suikalib'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = "${NEXUS_USERNAME}"
+                password = "${NEXUS_PASSWORD}"
+            }
+        }
+    }
+}
+
+
