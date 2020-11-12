@@ -54,10 +54,10 @@ public class SuikaConfigApp implements UpdateCallback {
 
     public static void init(Class<?> config, Set<Class<?>> clazz, File file) {
         customFile = true;
+        configFile = file;
         SuikaConfig configs = config.getAnnotation(SuikaConfig.class);
         configClass.addAll(clazz);
         loadConfig(config, configs);
-        configFile = file;
         injectBean(config);
     }
 
