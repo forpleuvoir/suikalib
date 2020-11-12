@@ -48,6 +48,13 @@ public class SuikaConfigApp implements UpdateCallback {
         injectBean(configClass);
     }
 
+    public static void init(Class<?> config,Set<Class<?>> clazz) {
+        SuikaConfig configs = config.getAnnotation(SuikaConfig.class);
+        configClass.addAll(clazz);
+        loadConfig(config, configs);
+        injectBean(config);
+    }
+
     private static void injectBean(Class<?> configClass) {
         scanConfigBean(configClass).forEach(field -> {
             field.setAccessible(true);

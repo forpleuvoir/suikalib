@@ -19,7 +19,7 @@ import java.util.jar.JarFile;
 
 public class ClassScanner {
 
-    private static List<String> classPaths = new ArrayList<String>();
+    private static List<String> classPaths = new ArrayList<>();
 
     /**
      * 扫描指定包下的所有类
