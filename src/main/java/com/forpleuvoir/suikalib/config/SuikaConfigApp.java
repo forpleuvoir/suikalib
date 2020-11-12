@@ -2,6 +2,7 @@ package com.forpleuvoir.suikalib.config;
 
 import com.forpleuvoir.suikalib.config.annotation.ConfigUpdateCallback;
 import com.forpleuvoir.suikalib.config.configInterface.UpdateCallback;
+import com.forpleuvoir.suikalib.reflection.ClassScanner;
 import com.forpleuvoir.suikalib.reflection.ClasspathPackageScanner;
 import com.forpleuvoir.suikalib.reflection.PackageScanner;
 import com.forpleuvoir.suikalib.reflection.ReflectionUtil;
@@ -63,24 +64,25 @@ public class SuikaConfigApp implements UpdateCallback {
     }
 
     private static void injectCallback(Object object) {
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            ConfigUpdateCallback config = field.getAnnotation(ConfigUpdateCallback.class);
-            if (config != null) {
-                try {
-                    field.set(object, new SuikaConfigApp());
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+        if (object != null)
+            for (Field field : object.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                ConfigUpdateCallback config = field.getAnnotation(ConfigUpdateCallback.class);
+                if (config != null) {
+                    try {
+                        field.set(object, new SuikaConfigApp());
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
     }
 
     /**
      * 加载配置文件
      *
      * @param configClass 配置类
-     * @param config 注解类
+     * @param config      注解类
      */
     private static void loadConfig(Class<?> configClass, SuikaConfig config) {
         if (!checkConfig(configClass, config)) {
@@ -238,26 +240,40 @@ public class SuikaConfigApp implements UpdateCallback {
      * @param packName 包名数组
      */
     private static void scanConfigClass(String[] packName) {
-        for (String s : packName) {
-            PackageScanner scan = new ClasspathPackageScanner(s);
-            List<String> list = null;
+        List<Class<?>> classList = new ArrayList<>();
+        try {
+            classList = ClassScanner.searchClass(packName);
+        } catch (ClassNotFoundException e) {
             try {
-                list = scan.getFullyQualifiedClassNameList();
-            } catch (IOException e) {
-                e.printStackTrace();
+                classList = ClassScanner.searchClassForJar(packName);
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
-            if (list != null)
-                list.forEach(str -> {
-                    try {
-                        Class<?> clazz = Class.forName(str);
-                        if (clazz.getAnnotation(Config.class) != null) {
-                            configClass.add(clazz);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                });
+            e.printStackTrace();
         }
+        if (!classList.isEmpty())
+            classList.forEach(clazz -> {
+                if (clazz.getAnnotation(Config.class) != null) {
+                    configClass.add(clazz);
+                }
+            });
+
+//        for (String s : packName) {
+//            PackageScanner scan = new ClasspathPackageScanner(s);
+//            List<String> list = null;
+//
+//            if (list != null)
+//                list.forEach(str -> {
+//                    try {
+//                        Class<?> clazz = Class.forName(str);
+//                        if (clazz.getAnnotation(Config.class) != null) {
+//                            configClass.add(clazz);
+//                        }
+//                    } catch (ClassNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//        }
 
     }
 
