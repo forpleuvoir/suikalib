@@ -57,7 +57,7 @@ public class ClassScanner {
         return list;
     }
 
-    public static List<Class<?>> searchClass(String[] basePackage) throws ClassNotFoundException {
+    public static List<Class<?>> searchClass(String[] basePackage) throws Exception {
         List<Class<?>> list = new ArrayList<>();
         for (String s : basePackage) {
             String classPath = ClassScanner.class.getResource("/").getPath();
