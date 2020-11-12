@@ -3,8 +3,6 @@ package com.forpleuvoir.suikalib.config;
 import com.forpleuvoir.suikalib.config.annotation.ConfigUpdateCallback;
 import com.forpleuvoir.suikalib.config.configInterface.UpdateCallback;
 import com.forpleuvoir.suikalib.reflection.ClassScanner;
-import com.forpleuvoir.suikalib.reflection.ClasspathPackageScanner;
-import com.forpleuvoir.suikalib.reflection.PackageScanner;
 import com.forpleuvoir.suikalib.reflection.ReflectionUtil;
 import com.forpleuvoir.suikalib.config.annotation.Config;
 import com.forpleuvoir.suikalib.config.annotation.ConfigField;
@@ -34,9 +32,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SuikaConfigApp implements UpdateCallback {
 
-    private static String fileName;
-    private static String filePath;
     private static File configFile;
+    private static Boolean customFile = false;
     private static final Set<Class<?>> configClass = new HashSet<>();
     private static final Map<String, Map<String, Object>> configObject = new HashMap<>();
     private static final Map<String, Object> configBean = new HashMap<>();
@@ -48,10 +45,19 @@ public class SuikaConfigApp implements UpdateCallback {
         injectBean(configClass);
     }
 
-    public static void init(Class<?> config,Set<Class<?>> clazz) {
+    public static void init(Class<?> config, Set<Class<?>> clazz) {
         SuikaConfig configs = config.getAnnotation(SuikaConfig.class);
         configClass.addAll(clazz);
         loadConfig(config, configs);
+        injectBean(config);
+    }
+
+    public static void init(Class<?> config, Set<Class<?>> clazz, File file) {
+        customFile = true;
+        SuikaConfig configs = config.getAnnotation(SuikaConfig.class);
+        configClass.addAll(clazz);
+        loadConfig(config, configs);
+        configFile = file;
         injectBean(config);
     }
 
@@ -163,7 +169,10 @@ public class SuikaConfigApp implements UpdateCallback {
      * @return boolean
      */
     private static boolean checkConfig(Class<?> configClass, SuikaConfig config) {
-        filePath = config.path();
+        if(customFile){
+            return FileUtil.checkFile(configFile);
+        }
+        String filePath = config.path();
         if (filePath.isEmpty()) {
             try {
                 filePath = new File("").getCanonicalPath() + "/" + configClass.getSimpleName();
@@ -171,7 +180,7 @@ public class SuikaConfigApp implements UpdateCallback {
                 e.printStackTrace();
             }
         }
-        fileName = config.filename();
+        String fileName = config.filename();
         if (fileName.isEmpty()) {
             fileName = configClass.getSimpleName();
         }
@@ -181,7 +190,7 @@ public class SuikaConfigApp implements UpdateCallback {
     }
 
     private static void createConfig() throws IOException {
-        configFile = FileUtil.createFile(filePath, fileName);
+        configFile = FileUtil.createFile(configFile.getPath(), configFile.getName());
     }
 
     private static void saveConfig() {
