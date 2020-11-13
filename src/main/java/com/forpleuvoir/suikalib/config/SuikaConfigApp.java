@@ -113,7 +113,7 @@ public class SuikaConfigApp implements UpdateCallback {
     private static void readConfigFile() {
         AtomicBoolean isChanged = new AtomicBoolean(false);
         try {
-            Map<String, Map<String, Object>> map = JsonUtil.fromJson(JsonParser.parseReader(new FileReader(configFile)), new TypeToken<Map<String, Map<String, Object>>>() {
+            Map<String, Map<String, Object>> map = JsonUtil.fromJson(new JsonParser().parse(new FileReader(configFile)), new TypeToken<Map<String, Map<String, Object>>>() {
             }.getType());
             map.forEach(configObject::put);
         } catch (FileNotFoundException e) {
