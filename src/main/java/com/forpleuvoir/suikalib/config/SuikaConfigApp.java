@@ -38,11 +38,24 @@ public class SuikaConfigApp implements UpdateCallback {
     private static final Map<String, Map<String, Object>> configObject = new HashMap<>();
     private static final Map<String, Object> configBean = new HashMap<>();
 
-    public static void init(Class<?> configClass) {
-        SuikaConfig config = configClass.getAnnotation(SuikaConfig.class);
-        scanConfigClass(config.packages());
-        loadConfig(configClass, config);
-        injectBean(configClass);
+    public static void init(Class<?> clazz) {
+        SuikaConfig config = clazz.getAnnotation(SuikaConfig.class);
+        try {
+            scanConfigClass(config.packages());
+        } catch (Exception e) {
+            ReflectionUtil.getFieldByAnnotation(clazz, Config.class).forEach(field -> {
+                configClass.add(field.getType());
+            });
+
+        }
+        loadConfig(clazz, config);
+        injectBean(clazz);
+    }
+
+    public static void init(Class<?> config, File file) {
+        customFile = true;
+        configFile = file;
+        init(config);
     }
 
     public static void init(Class<?> config, Set<Class<?>> clazz) {
@@ -55,10 +68,7 @@ public class SuikaConfigApp implements UpdateCallback {
     public static void init(Class<?> config, Set<Class<?>> clazz, File file) {
         customFile = true;
         configFile = file;
-        SuikaConfig configs = config.getAnnotation(SuikaConfig.class);
-        configClass.addAll(clazz);
-        loadConfig(config, configs);
-        injectBean(config);
+        init(config, clazz);
     }
 
     private static void injectBean(Class<?> configClass) {

@@ -43,6 +43,6 @@ public @interface SuikaConfig {
      *
      * @return
      */
-    String[] packages();
+    String[] packages() default "";
 
 }

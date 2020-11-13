@@ -1,10 +1,7 @@
 package com.forpleuvoir.suikalib.util;
 
 import com.forpleuvoir.suikalib.reflection.ReflectionUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.TypeAdapterFactory;
+import com.google.gson.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -26,6 +23,29 @@ public class JsonUtil {
 
     public static StringBuffer toStringBuffer(Object obj) {
         return new StringBuffer(gson.toJson(obj));
+    }
+
+
+    /**
+     * 将对象转换成json字符串
+     *
+     * @param json 需要转换的对象
+     * @return json字符串
+     */
+    public static String toJsonStr(Object json) {
+        return gson.toJson(json);
+    }
+
+
+    /**
+     * 将json字符串转换成JsonObject
+     *
+     * @param json 需要转换的字符串对象
+     * @return JsonObject对象
+     * @throws Exception
+     */
+    public static JsonObject strToJsonObject(String json) {
+        return new JsonParser().parse(json).getAsJsonObject();
     }
 
     @SuppressWarnings("unchecked")
