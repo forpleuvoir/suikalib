@@ -57,6 +57,19 @@ public class FileUtil {
         return file;
     }
 
+    /**
+     * 创建文件
+     *
+     * @param file 文件对象
+     * @return 成功创建的文件对象
+     * @throws IOException 文件创建失败
+     */
+    public static void createFile(File file)throws IOException{
+        if(!file.exists()){
+            file.createNewFile();
+        }
+    }
+
 
     /**
      * 将字符串写入文件

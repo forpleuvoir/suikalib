@@ -169,7 +169,7 @@ public class SuikaConfigApp implements UpdateCallback {
      * @return boolean
      */
     private static boolean checkConfig(Class<?> configClass, SuikaConfig config) {
-        if(customFile){
+        if (customFile) {
             return FileUtil.checkFile(configFile);
         }
         String filePath = config.path();
@@ -190,8 +190,13 @@ public class SuikaConfigApp implements UpdateCallback {
     }
 
     private static void createConfig() throws IOException {
-        configFile = FileUtil.createFile(configFile.getPath(), configFile.getName());
+        if (customFile) {
+            FileUtil.createFile(configFile);
+        } else {
+            configFile = FileUtil.createFile(configFile.getPath(), configFile.getName());
+        }
     }
+
 
     private static void saveConfig() {
         String content = String.valueOf(JsonUtil.toStringBuffer(configObject));
