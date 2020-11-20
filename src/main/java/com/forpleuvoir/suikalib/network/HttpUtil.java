@@ -1,6 +1,6 @@
 package com.forpleuvoir.suikalib.network;
 
-import com.sun.istack.internal.Nullable;
+
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ public class HttpUtil {
      * @param headers HttpRequestHeader属性map集合 一般用来添加token
      * @return {@link Result}
      */
-    public static Result post(String httpUrl, @Nullable String params, @Nullable Map<String, String> headers) {
+    public static Result post(String httpUrl, String params, Map<String, String> headers) {
         return base(httpUrl, params, headers, Type.POST);
     }
 
@@ -40,7 +40,7 @@ public class HttpUtil {
      * @param headers HttpRequestHeader属性map集合 一般用来添加token
      * @return {@link Result}
      */
-    public static Result get(String httpUrl, @Nullable Map<String, String> params, @Nullable Map<String, String> headers) {
+    public static Result get(String httpUrl, Map<String, String> params, Map<String, String> headers) {
         try {
             if (params != null && !params.isEmpty()) {
                 StringBuilder stringBuilder = new StringBuilder(httpUrl).append("?");
@@ -69,7 +69,7 @@ public class HttpUtil {
      * @param headers HttpRequestHeader属性map集合 一般用来添加token
      * @return {@link Result}
      */
-    public static Result put(String httpUrl, @Nullable String params, @Nullable Map<String, String> headers) {
+    public static Result put(String httpUrl, String params, Map<String, String> headers) {
         return base(httpUrl, params, headers, Type.PUT);
     }
 
@@ -81,7 +81,7 @@ public class HttpUtil {
      * @param headers HttpRequestHeader属性map集合 一般用来添加token
      * @return {@link Result}
      */
-    public static Result delete(String httpUrl, @Nullable String params, @Nullable Map<String, String> headers) {
+    public static Result delete(String httpUrl, String params, Map<String, String> headers) {
         return base(httpUrl, params, headers, Type.DELETE);
     }
 
@@ -93,7 +93,7 @@ public class HttpUtil {
      * @param headers HttpRequestHeader属性map集合 一般用来添加token
      * @return {@link Result}
      */
-    private static Result base(String httpUrl, @Nullable String params, @Nullable Map<String, String> headers, Type type) {
+    private static Result base(String httpUrl, String params, Map<String, String> headers, Type type) {
         try {
             URL url = new URL(httpUrl);
             HttpURLConnection conn = getConnection(url, type.getValue(), headers);
@@ -124,14 +124,14 @@ public class HttpUtil {
                 buffer.append(str);
             }
             String result = buffer.toString();
-            return Result.getResult(result,connection);
+            return Result.getResult(result, connection);
         } catch (Exception e) {
             return Result.getExceptionResult(e);
         }
     }
 
 
-    private static HttpURLConnection getConnection(URL url, String method, @Nullable Map<String, String> header) throws Exception {
+    private static HttpURLConnection getConnection(URL url, String method, Map<String, String> header) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         conn.setRequestProperty("Content-type", "application/json;charset=UTF-8");
