@@ -40,14 +40,8 @@ public class SuikaConfigApp implements UpdateCallback {
 
     public static void init(Class<?> clazz) {
         SuikaConfig config = clazz.getAnnotation(SuikaConfig.class);
-        try {
-            scanConfigClass(config.packages());
-        } catch (Exception e) {
-            ReflectionUtil.getFieldByAnnotation(clazz, Config.class).forEach(field -> {
-                configClass.add(field.getType());
-            });
-
-        }
+        if (!scanConfigClass(config.packages()))
+            ReflectionUtil.getFieldByAnnotation(clazz, Config.class).forEach(field -> configClass.add(field.getType()));
         loadConfig(clazz, config);
         injectBean(clazz);
     }
@@ -270,8 +264,8 @@ public class SuikaConfigApp implements UpdateCallback {
      *
      * @param packName 包名数组
      */
-    private static void scanConfigClass(String[] packName) {
-        List<Class<?>> classList = new ArrayList<>();
+    private static boolean scanConfigClass(String[] packName) {
+        List<Class<?>> classList;
         try {
             classList = ClassScanner.searchClass(packName);
         } catch (Exception e) {
@@ -279,6 +273,7 @@ public class SuikaConfigApp implements UpdateCallback {
                 classList = ClassScanner.searchClassForJar(packName);
             } catch (Exception exception) {
                 exception.printStackTrace();
+                return false;
             }
             e.printStackTrace();
         }
@@ -288,24 +283,7 @@ public class SuikaConfigApp implements UpdateCallback {
                     configClass.add(clazz);
                 }
             });
-
-//        for (String s : packName) {
-//            PackageScanner scan = new ClasspathPackageScanner(s);
-//            List<String> list = null;
-//
-//            if (list != null)
-//                list.forEach(str -> {
-//                    try {
-//                        Class<?> clazz = Class.forName(str);
-//                        if (clazz.getAnnotation(Config.class) != null) {
-//                            configClass.add(clazz);
-//                        }
-//                    } catch (ClassNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//        }
-
+        return true;
     }
 
     private static Map<String, Object> beanToMap(Object bean) {
