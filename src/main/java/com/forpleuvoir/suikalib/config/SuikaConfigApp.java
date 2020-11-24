@@ -272,10 +272,8 @@ public class SuikaConfigApp implements UpdateCallback {
             try {
                 classList = ClassScanner.searchClassForJar(packName);
             } catch (Exception exception) {
-                exception.printStackTrace();
                 return false;
             }
-            e.printStackTrace();
         }
         if (!classList.isEmpty())
             classList.forEach(clazz -> {
