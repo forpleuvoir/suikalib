@@ -19,14 +19,14 @@ import java.util.jar.JarFile;
 
 public class ClassScanner {
 
-    private static List<String> classPaths = new ArrayList<>();
+    private static final List<String> classPaths = new ArrayList<>();
 
     /**
      * 扫描指定包下的所有类
      *
-     * @param basePackage
-     * @return
-     * @throws Exception
+     * @param basePackage 包名
+     * @return 类
+     * @throws Exception IO异常
      */
     public static List<Class<?>> searchClassForJar(String[] basePackage) throws Exception {
         List<Class<?>> list = new ArrayList<>();
