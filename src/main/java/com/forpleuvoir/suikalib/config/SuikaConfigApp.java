@@ -283,6 +283,7 @@ public class SuikaConfigApp implements UpdateCallback {
                     configClass.add(clazz);
                 }
             });
+        else return false;
         return true;
     }
 
