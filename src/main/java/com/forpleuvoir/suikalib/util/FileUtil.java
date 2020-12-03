@@ -15,25 +15,26 @@ public class FileUtil {
 
     /**
      * 将文件中的内容读取到字符串中
+     *
      * @param file 文件对象
      * @return 内容
      * @throws IOException {@link FileNotFoundException} 文件未找到
      */
-    public static String loadFile(File file)throws IOException{
-        if(!file.exists()){
+    public static String loadFile(File file) throws IOException {
+        if (!file.exists()) {
             throw new FileNotFoundException("file not found");
         }
-        StringBuilder result=new StringBuilder();
-        BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        StringBuilder result = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
         String s;
-        while ((s= bufferedReader.readLine())!=null){
+        while ((s = bufferedReader.readLine()) != null) {
             result.append(System.lineSeparator()).append(s);
         }
         bufferedReader.close();
         return result.toString();
     }
 
-    public static boolean checkFile(File file){
+    public static boolean checkFile(File file) {
         return file.exists();
     }
 
@@ -64,22 +65,30 @@ public class FileUtil {
      * @return 成功创建的文件对象
      * @throws IOException 文件创建失败
      */
-    public static void createFile(File file)throws IOException{
-        if(!file.exists()){
-            file.createNewFile();
+    public static void createFile(File file) throws IOException {
+        if (file.isDirectory()) {
+           file.mkdirs();
+        }else{
+            File dir = new File(file.getParent());
+            if (!dir.exists())
+                dir.mkdirs();
+            if (!file.exists()) {
+                file.createNewFile();
+            }
         }
     }
 
 
     /**
      * 将字符串写入文件
-     * @param file 文件对象
+     *
+     * @param file    文件对象
      * @param content 写入的内容
-     * @param append 是否从最后添加
+     * @param append  是否从最后添加
      * @return 文件对象
      * @throws Exception
      */
-    public static void writeFile(File file, String content, boolean append)throws IOException  {
+    public static void writeFile(File file, String content, boolean append) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("file not found");
         }

@@ -120,7 +120,7 @@ public class SuikaConfigApp implements UpdateCallback {
             Map<String, Map<String, Object>> map = JsonUtil.fromJson(new JsonParser().parse(new FileReader(configFile)), new TypeToken<Map<String, Map<String, Object>>>() {
             }.getType());
             map.forEach(configObject::put);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         configClass.forEach(clazz -> {
